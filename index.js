@@ -4,10 +4,12 @@ const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 const keys = require('./config/keys');
+const cors = require('cors');
 
 require('./models/User');
 require('./models/Blog');
 require('./services/passport');
+require('./services/cache');
 
 mongoose.connect(keys.mongoURI);
 const db = mongoose.connection;
@@ -17,12 +19,13 @@ db.once('open', function () {
 });
 
 const app = express();
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(
   cookieSession({
     maxAge: 30 * 24 * 60 * 60 * 1000,
-    keys: [keys.cookieKey]
+    keys: [keys.cookieKey],
   })
 );
 app.use(passport.initialize());
